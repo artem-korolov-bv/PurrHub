@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { listCats, catByIdUrl, type Cat } from '../services/cataas';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { listCats, listTags, catByIdUrl, type Cat } from '../services/cataas';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
+import { Autocomplete, type AutocompleteOption } from '../components/ui/autocomplete';
 
 const PAGE_SIZE = 12;
 
@@ -23,6 +23,14 @@ export default function SearchCats() {
   const [activeTag, setActiveTag] = useState('');
   const [skip, setSkip] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [tagOptions, setTagOptions] = useState<AutocompleteOption[]>([]);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    listTags()
+      .then(tags => setTagOptions(tags.map(t => ({ value: t, label: t }))))
+      .catch(() => {}); // non-critical — autocomplete still works without suggestions
+  }, []);
 
   const fetchCats = useCallback(async (tag: string, skipCount: number, append: boolean) => {
     append ? setLoadingMore(true) : setLoading(true);
@@ -46,12 +54,11 @@ export default function SearchCats() {
     fetchCats('', 0, false);
   }, [fetchCats]);
 
-  const handleSearch = () => {
-    const tag = tagInput.trim();
+  const handleSearch = useCallback((tag: string) => {
     setActiveTag(tag);
     setSkip(0);
     fetchCats(tag, 0, false);
-  };
+  }, [fetchCats]);
 
   const handleClear = () => {
     setTagInput('');
@@ -60,11 +67,29 @@ export default function SearchCats() {
     fetchCats('', 0, false);
   };
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     const nextSkip = skip + PAGE_SIZE;
     setSkip(nextSkip);
     fetchCats(activeTag, nextSkip, true);
-  };
+  }, [skip, activeTag, fetchCats]);
+
+  // Auto-load on scroll — watch the sentinel element
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
+          handleLoadMore();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadingMore, handleLoadMore]);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col gap-8">
@@ -77,14 +102,23 @@ export default function SearchCats() {
 
       {/* Search bar */}
       <div className="flex flex-col gap-3">
-        <div className="flex gap-2 max-w-sm">
-          <Input
+        <div className="flex gap-2 max-w-sm items-end">
+          <Autocomplete
             placeholder="e.g. cute, funny, sleepy…"
+            options={tagOptions}
             value={tagInput}
-            onChange={e => setTagInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSearch()}
+            onChange={setTagInput}
+            onSelect={o => {
+              setTagInput(o.label);
+              handleSearch(o.value);
+            }}
+            maxOptions={Infinity}
           />
-          <Button leftIcon={<SearchIcon />} onClick={handleSearch} loading={loading}>
+          <Button
+            leftIcon={<SearchIcon />}
+            onClick={() => handleSearch(tagInput.trim())}
+            loading={loading}
+          >
             Search
           </Button>
         </div>
@@ -151,14 +185,15 @@ export default function SearchCats() {
         </div>
       )}
 
-      {/* Load more */}
-      {!loading && hasMore && cats.length > 0 && (
-        <div className="flex justify-center">
-          <Button variant="secondary" onClick={handleLoadMore} loading={loadingMore}>
-            Load more
-          </Button>
-        </div>
-      )}
+      {/* Infinite scroll sentinel */}
+      <div ref={sentinelRef} className="flex justify-center py-4">
+        {loadingMore && (
+          <svg className="animate-spin size-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        )}
+      </div>
     </div>
   );
 }
