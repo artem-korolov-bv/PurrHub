@@ -4,6 +4,7 @@ import { cn } from '../../lib/utils';
 const navLinks = [
   { label: 'Home', to: '/' },
   { label: 'Random Cats', to: '/random-cats' },
+  { label: 'Search Cats', to: '/search-cats' },
   { label: 'Showcase', to: '/showcase' },
 ];
 
