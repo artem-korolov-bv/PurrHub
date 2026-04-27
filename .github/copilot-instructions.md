@@ -36,6 +36,11 @@ src/
 ### Layout
 - Menu with links to Home and other pages (e.g. Random Cats, Component Showcase).
 
+### Pages/Random Cats
+- Fetch and display random cat images using the cat api from service/cataas.ts
+- Include a button to fetch a new random cat image.
+- Has an input field to search for cats by tag (e.g. "cute", "funny") and display results.
+
 ### Styling
 - Use TailwindCSS utility classes exclusively — no custom CSS files except `index.css` for global resets.
 - Support both light and dark mode using `dark:` variants.
@@ -52,3 +57,8 @@ src/
 
 ### Services
 - API calls go in `src/services/`. Keep them as plain async functions — no class wrappers.
+
+### GitHub Flow
+- Use feature branches for new work (e.g. `feature/random-cats-page`).
+- Open pull requests against `main` for code review and merging.
+- Write clear commit messages and PR descriptions.
