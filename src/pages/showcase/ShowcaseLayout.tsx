@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 const components = [
   { label: 'Button', to: '/showcase/button' },
   { label: 'Input', to: '/showcase/input' },
+  { label: 'Autocomplete', to: '/showcase/autocomplete' },
   // Add more components here as they are created
 ];
 
