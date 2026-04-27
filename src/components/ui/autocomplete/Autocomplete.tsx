@@ -209,7 +209,7 @@ export const Autocomplete = React.forwardRef<HTMLInputElement, AutocompleteProps
               ref={listRef}
               id={listId}
               role="listbox"
-              className="max-h-60 overflow-y-auto py-1"
+              className="max-h-96 overflow-y-auto py-1"
             >
               {resolvedOptions.map((option, i) => (
                 <li
