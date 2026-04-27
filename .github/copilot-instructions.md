@@ -62,3 +62,9 @@ src/
 - Use feature branches for new work (e.g. `feature/random-cats-page`).
 - Open pull requests against `main` for code review and merging.
 - Write clear commit messages and PR descriptions.
+
+### Change Approval Workflow
+- Implement changes locally first.
+- Present a clear summary of all files created/modified and what changed in each.
+- **Wait for explicit user approval before committing or pushing anything.**
+- Only run `git commit` and `git push` after the user confirms the changes are good.
