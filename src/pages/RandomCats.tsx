@@ -32,11 +32,15 @@ function RandomCatHero() {
   useEffect(() => { fetchRandom(); }, [fetchRandom]);
 
   return (
-    <div className="flex flex-col sm:flex-row gap-6 items-start">
-      <div className="relative w-full sm:w-72 aspect-square rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-800 shadow-lg shrink-0">
+    <div className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/10 dark:shadow-indigo-900/30 bg-gray-100 dark:bg-gray-900">
+      {/* Image */}
+      <div className="relative aspect-[4/3] w-full">
+        {/* Skeleton */}
         {loading && (
           <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-800" />
         )}
+
+        {/* Cat image */}
         {cat && !loading && (
           <img
             key={cat.id}
@@ -45,54 +49,56 @@ function RandomCatHero() {
             className="w-full h-full object-cover"
           />
         )}
+
+        {/* Error state */}
         {error && !loading && (
-          <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-400 p-4 text-center">
-            {error}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-gray-400 p-6 text-center">
+            <span className="text-4xl">🐱</span>
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+
+        {/* Bottom gradient overlay */}
+        {cat && !loading && (
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+        )}
+
+        {/* Tags on top of image */}
+        {cat && !loading && cat.tags.length > 0 && (
+          <div className="absolute bottom-4 left-4 flex flex-wrap gap-1.5">
+            {cat.tags.map(tag => (
+              <span
+                key={tag}
+                className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white border border-white/20 px-2.5 py-0.5 rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Skeleton tags */}
+        {loading && (
+          <div className="absolute bottom-4 left-4 flex gap-1.5">
+            {[60, 48, 72].map(w => (
+              <div key={w} className="h-5 rounded-full bg-white/20 animate-pulse" style={{ width: w }} />
+            ))}
           </div>
         )}
       </div>
 
-      <div className="flex flex-col gap-4 justify-between py-1">
-        <div className="flex flex-col gap-2">
-          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
-            Cat of the moment
-          </p>
-          {cat && !loading ? (
-            <>
-              <p className="font-mono text-sm text-gray-500 dark:text-gray-400 break-all">{cat.id}</p>
-              {cat.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-1">
-                  {cat.tags.map(tag => (
-                    <span
-                      key={tag}
-                      className="text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 px-2 py-0.5 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <div className="h-4 w-40 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
-              <div className="flex gap-1.5 mt-1">
-                {[60, 48, 72].map(w => (
-                  <div key={w} className="h-5 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" style={{ width: w }} />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
+      {/* Footer bar */}
+      <div className="flex items-center justify-between px-5 py-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+          Cat of the moment
+        </p>
         <Button
           leftIcon={<RefreshIcon />}
           onClick={fetchRandom}
           loading={loading}
-          variant="secondary"
           size="sm"
         >
-          New random cat
+          New cat
         </Button>
       </div>
     </div>
@@ -101,8 +107,8 @@ function RandomCatHero() {
 
 export default function RandomCats() {
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col gap-10">
-      <div>
+    <div className="flex flex-col items-center px-6 py-10 gap-10">
+      <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight">Random Cats</h1>
         <p className="mt-1 text-gray-500 dark:text-gray-400">Discover a random cat from the internet.</p>
       </div>
