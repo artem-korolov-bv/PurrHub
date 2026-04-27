@@ -6,6 +6,7 @@ import SearchCats from './pages/SearchCats';
 import ShowcaseLayout from './pages/showcase/ShowcaseLayout';
 import ButtonShowcase from './pages/showcase/ButtonShowcase';
 import InputShowcase from './pages/showcase/InputShowcase';
+import AutocompleteShowcase from './pages/showcase/AutocompleteShowcase';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route index element={<Navigate to="button" replace />} />
             <Route path="button" element={<ButtonShowcase />} />
             <Route path="input" element={<InputShowcase />} />
+            <Route path="autocomplete" element={<AutocompleteShowcase />} />
           </Route>
         </Route>
       </Routes>
